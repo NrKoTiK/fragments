@@ -11,5 +11,10 @@
     "url": "git+https://github.com/NrKoTiK/fragments.git"
   },
   "author": "Ahmad Syed",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0"
+  }
 }
