@@ -13,6 +13,9 @@ If you want a nice format for curl.exe use this command: "curl.exe localhost:808
 Git Commands:
 
 git status - understand the status of the repo
+
 git add - Allows to add modded files and docs (DO NOT BE IMPLICIT ALWAYS TYPE THE FILE NAMES EXPLICITLY).
+
 git commit -m - Allows to commit into repo with a little message to help understand what was committed.
+
 git push origin main - Pushes the changes to the main repo on github
