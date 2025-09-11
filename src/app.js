@@ -15,6 +15,11 @@ const pino = require('pino-http')({
   logger,
 });
 
+// ...existing code...
+
+// Use Pino logger to log environment variables in debug mode
+logger.debug(process.env, 'Environment Variables');
+
 // Create an express app instance we can use to attach middleware and HTTP routes
 const app = express();
 
