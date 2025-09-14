@@ -1,5 +1,6 @@
 // src/server.js
 
+require('dotenv').config();
 // We want to gracefully shutdown our server
 const stoppable = require('stoppable');
 
@@ -10,7 +11,7 @@ const logger = require('./logger');
 const app = require('./app');
 
 // Get the desired port from the process' environment. Default to `8080`
-const port = parseInt(process.env.PORT || '8080', 10);
+const port = parseInt(process.env.PORT || 8080, 10);
 
 // Start a server listening on this port
 const server = stoppable(
