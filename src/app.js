@@ -36,6 +36,9 @@ app.use(compression());
 passport.use(authenticate.strategy());
 app.use(passport.initialize());
 
+// Use CORS middleware so we can make requests across origins
+app.use(cors());
+
 // Define our routes
 app.use('/', require('./routes'));
 
@@ -44,9 +47,6 @@ app.use(pino);
 
 // Use helmetjs security middleware
 app.use(helmet());
-
-// Use CORS middleware so we can make requests across origins
-app.use(cors());
 
 // Use gzip/deflate compression middleware
 app.use(compression());
