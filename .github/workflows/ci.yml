@@ -41,9 +41,7 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-    # modifications to .github/workflows/ci.yml
-
-jobs:
+  # modifications to .github/workflows/ci.yml
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
