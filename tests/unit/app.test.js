@@ -14,5 +14,4 @@ describe('404 Middleware', () => {
       },
     });
   });
-  // Might add more tests later... for app.js (such as for 500 error-handling middleware)
 });

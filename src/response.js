@@ -1,13 +1,5 @@
 // src/response.js
 
-/**
- * A successful response looks like:
- *
- * {
- *   "status": "ok",
- *   ...
- * }
- */
 module.exports.createSuccessResponse = function (data) {
   return {
     status: 'ok',
