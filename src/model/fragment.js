@@ -13,6 +13,7 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data/memory');
+const logger = require('../logger');
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
@@ -45,6 +46,7 @@ class Fragment {
   static async byUser(ownerId, expand = false) {
     const fragments = await listFragments(ownerId, expand);
     if (expand) {
+      logger.debug(`Expanding fragments for user ${ownerId}`);
       return fragments.map((fragmentData) => new Fragment({ ...JSON.parse(fragmentData) }));
     } else {
       return fragments;
