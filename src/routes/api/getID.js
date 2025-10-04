@@ -10,14 +10,14 @@ module.exports = async (req, res) => {
       return res.status(401).json(createErrorResponse(401, 'Unauthorized'));
     }
 
+    // This will change so that I can manipulate the id if needed (for the extensions)
     const fullId = req.params.id;
-    let fragmentId = fullId;
 
     let fragment;
     try {
-      fragment = await Fragment.byId(req.user, fragmentId);
+      fragment = await Fragment.byId(req.user, fullId);
     } catch {
-      logger.warn(`Fragment ${fragmentId} not found for user ${req.user}`);
+      logger.warn(`Fragment ${fullId} not found for user ${req.user}`);
       return res.status(404).json(createErrorResponse(404, 'Fragment not found'));
     }
 
