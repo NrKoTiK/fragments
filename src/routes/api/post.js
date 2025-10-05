@@ -40,19 +40,22 @@ module.exports = async (req, res) => {
     logger.info(`Created fragment ${fragment.id} for user ${req.user}`);
 
     // Return success response
-    res.status(201).json(
-      createSuccessResponse({
-        fragment: {
-          id: fragment.id,
-          ownerId: fragment.ownerId,
-          created: fragment.created,
-          updated: fragment.updated,
-          type: fragment.type,
-          size: fragment.size,
-        },
-        location: location,
-      })
-    );
+    res
+      .status(201)
+      .location(location)
+      .json(
+        createSuccessResponse({
+          fragment: {
+            id: fragment.id,
+            ownerId: fragment.ownerId,
+            created: fragment.created,
+            updated: fragment.updated,
+            type: fragment.type,
+            size: fragment.size,
+          },
+          location: location,
+        })
+      );
   } catch (error) {
     logger.error('Error creating fragment:', error);
     res.status(500).json(createErrorResponse(500, 'Unable to create fragment'));
