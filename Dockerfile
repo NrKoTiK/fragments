@@ -33,9 +33,6 @@ EXPOSE 8080
 
 WORKDIR /app
 
-# Copy node_modules from dependencies stage (This command was given to me by VSC Copilot but I do understand what is going on in it)
-COPY --from=dependencies --chown=node:node /app/node_modules ./node_modules
-
 # Copy package files
 COPY --chown=node:node package*.json ./
 
