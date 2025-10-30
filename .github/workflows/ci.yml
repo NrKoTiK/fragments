@@ -25,7 +25,6 @@ jobs:
       # https://github.com/actions/checkout
       - name: Check out code
         uses: actions/checkout@v4
-
       # https://github.com/actions/setup-node
       - name: Setup node
         uses: actions/setup-node@v4
@@ -41,6 +40,17 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+    
+    dockerfile-lint:
+      name: Dockerfile Lint
+      runs-on: ubuntu-latest
+      steps:
+        # https://github.com/marketplace/actions/hadolint-action
+        - uses: actions/checkout@v4
+        - uses: hadolint/hadolint-action@v3.1.0
+          with:
+            dockerfile: Dockerfile
+  
   # modifications to .github/workflows/ci.yml
   unit-tests:
     name: Unit Tests
