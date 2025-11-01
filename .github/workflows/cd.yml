@@ -28,9 +28,27 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        # Use buildx, which is faster and can optimize the build steps
+
+      # Use buildx, which is faster and can optimize the build steps
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      # MISSING: Configure AWS Credentials
+      - name: Configure AWS Credentials using Secrets
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          # Use our GitHub Encrypted Secrets via secrets.*
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          # Hard-code our region, which isn't a secret, and won't change
+          aws-region: us-east-1
+
+      # MISSING: Login to our ECR repository using the configured credentials
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
       # Build and Push an Image to Amazon ECR
       - name: Build and push to Amazon ECR
         env:
