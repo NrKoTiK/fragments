@@ -45,4 +45,4 @@ COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
 USER node
 
 # Start the container by running our server
-CMD ["npm", "start"]
+CMD ["node", "start"]
