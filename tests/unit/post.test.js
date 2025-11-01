@@ -61,7 +61,6 @@ describe('POST /v1/fragments', () => {
     const updatedTime = new Date(fragment.updated).getTime();
     const timeDifference = Math.abs(updatedTime - createdTime);
 
-    // Allow up to 100ms difference (should be much less in practice)
     expect(timeDifference).toBeLessThanOrEqual(100);
   });
 
