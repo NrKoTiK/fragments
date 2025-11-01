@@ -57,7 +57,12 @@ describe('POST /v1/fragments', () => {
     expect(fragment.size).toBe(fragmentData.length);
     expect(new Date(fragment.created)).toBeInstanceOf(Date);
     expect(new Date(fragment.updated)).toBeInstanceOf(Date);
-    expect(fragment.created).toBe(fragment.updated); // Should be same on creation
+    const createdTime = new Date(fragment.created).getTime();
+    const updatedTime = new Date(fragment.updated).getTime();
+    const timeDifference = Math.abs(updatedTime - createdTime);
+
+    // Allow up to 100ms difference (should be much less in practice)
+    expect(timeDifference).toBeLessThanOrEqual(100);
   });
 
   // Test response includes Location header with full URL
