@@ -33,7 +33,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # MISSING: Configure AWS Credentials
+      # Configure AWS Credentials
       - name: Configure AWS Credentials using Secrets
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -44,7 +44,7 @@ jobs:
           # Hard-code our region, which isn't a secret, and won't change
           aws-region: us-east-1
 
-      # MISSING: Login to our ECR repository using the configured credentials
+      # Login to our ECR repository using the configured credentials
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
@@ -54,7 +54,7 @@ jobs:
         env:
           # Define an Environment Variable with our ECR Registry, getting
           # the value from the previous step's outputs
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY: ${{ 992382847621.dkr.ecr.us-east-1.amazonaws.com/fragments }}
           # Define an Environment Variable with our ECR Repository Name
           ECR_REPO: fragments
           # We'll give this image two different tags. First, we'll use the git tag (vX.Y.Z)
