@@ -56,7 +56,6 @@ jobs:
     needs: [lint, dockerfile-lint, unit-tests]
     runs-on: ubuntu-latest
     steps:
-      # ADD THIS MISSING STEP!
       - name: Check out code
         uses: actions/checkout@v4
 

@@ -33,6 +33,8 @@ EXPOSE 8080
 
 WORKDIR /app
 
+COPY --from=dependencies --chown=node:node /app/node_modules ./node_modules
+
 # Copy package files
 COPY --chown=node:node package*.json ./
 
