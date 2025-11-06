@@ -41,13 +41,23 @@ class Fragment {
    * Get all fragments (id or full) for the given user
    * @param {string} ownerId user's hashed email
    * @param {boolean} expand whether to expand ids to full fragments
-   * @returns Promise<Array<Fragment>>
+   * @returns Promise<Array<string|Object>> array of fragment ids or full fragment metadata
    */
   static async byUser(ownerId, expand = false) {
     const fragments = await listFragments(ownerId, expand);
     if (expand) {
       logger.debug(`Expanding fragments for user ${ownerId}`);
-      return fragments.map((fragmentData) => new Fragment({ ...JSON.parse(fragmentData) }));
+      return fragments.map((fragmentData) => {
+        const fragment = new Fragment({ ...JSON.parse(fragmentData) });
+        return {
+          id: fragment.id,
+          ownerId: fragment.ownerId,
+          created: fragment.created,
+          updated: fragment.updated,
+          type: fragment.type,
+          size: fragment.size,
+        };
+      });
     } else {
       return fragments;
     }
@@ -146,7 +156,14 @@ class Fragment {
    */
   static isSupportedType(value) {
     // List of supported MIME types
-    const supportedTypes = ['text/plain'];
+    const supportedTypes = [
+      'text/plain',
+      'text/markdown',
+      'text/html',
+      'text/csv',
+      'application/json',
+      'application/yaml',
+    ];
 
     // Parse the content type to get just the media type (without charset)
     try {

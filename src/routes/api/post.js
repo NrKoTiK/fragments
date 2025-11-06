@@ -24,6 +24,12 @@ module.exports = async (req, res) => {
     // Parse content type
     const { type } = contentType.parse(fullContentType);
 
+    // Validate content type is supported
+    if (!Fragment.isSupportedType(type)) {
+      logger.error(`Unsupported Content-Type: ${type}`);
+      return res.status(415).json(createErrorResponse(415, `Unsupported Content-Type: ${type}`));
+    }
+
     // Create new fragment
     const fragment = new Fragment({
       ownerId: req.user,
