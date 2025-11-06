@@ -84,12 +84,32 @@ describe('POST /v1/fragments', () => {
     const res = await request(app)
       .post('/v1/fragments')
       .auth('user1@email.com', 'password1')
-      .set('Content-Type', 'application/json')
-      .send('{"key": "value"}');
+      // to make sure the content type is not some video or image (reads content type in binary)
+      .set('Content-Type', 'application/octet-stream')
+      .send('binary data');
 
     expect(res.status).toBe(415);
     expect(res.body.status).toBe('error');
     expect(res.body.error.code).toBe(415);
     expect(res.body.error.message).toMatch('Unsupported Content-Type');
+  });
+
+  // Test that application/json content type works
+  test('authenticated users can create an application/json fragment', async () => {
+    const fragmentData = '{"key": "value"}';
+    const expectedOwnerId = hash('user1@email.com');
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'application/json')
+      .send(fragmentData);
+
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe('ok');
+    const fragment = res.body.fragment;
+    expect(fragment.ownerId).toBe(expectedOwnerId);
+    expect(fragment.type).toBe('application/json');
+    expect(fragment.size).toBe(fragmentData.length);
   });
 });
