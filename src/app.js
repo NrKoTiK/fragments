@@ -18,27 +18,26 @@ logger.debug(process.env, 'Environment Variables');
 
 const app = express();
 
-app.use(compression());
-
-passport.use(authenticate.strategy());
-app.use(passport.initialize());
-
-app.use(cors());
-
-// Define our routes
-app.use('/', require('./routes'));
-
-// Use pino logging middleware
-app.use(pino);
-
-// Use helmetjs security middleware
+// Use helmetjs security middleware first
 app.use(helmet());
 
 // Use gzip/deflate compression middleware
 app.use(compression());
 
+// Use pino logging middleware
+app.use(pino);
+
+// Use CORS
+app.use(cors());
+
+// Set up passport
+passport.use(authenticate.strategy());
+app.use(passport.initialize());
+
+// Define our routes
 app.use('/', require('./routes'));
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
@@ -49,6 +48,7 @@ app.use((req, res) => {
   });
 });
 
+// Error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const status = err.status || 500;

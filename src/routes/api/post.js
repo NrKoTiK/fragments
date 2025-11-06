@@ -20,8 +20,9 @@ module.exports = async (req, res) => {
         .json(createErrorResponse(415, `Unsupported Content-Type: ${contentTypeHeader}`));
     }
 
+    const fullContentType = req.get('Content-Type');
     // Parse content type
-    const { type } = contentType.parse(req.get('Content-Type'));
+    const { type } = contentType.parse(fullContentType);
 
     // Create new fragment
     const fragment = new Fragment({
