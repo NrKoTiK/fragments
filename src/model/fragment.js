@@ -145,8 +145,112 @@ class Fragment {
    * @returns {Array<string>} list of supported mime types
    */
   get formats() {
-    const supportedTypes = ['text/plain'];
-    return supportedTypes;
+    const conversionMap = {
+      'text/plain': ['text/plain'],
+      'text/markdown': ['text/markdown', 'text/html', 'text/plain'],
+      'text/html': ['text/html', 'text/plain'],
+      'text/csv': ['text/csv', 'text/plain', 'application/json'],
+      'application/json': ['application/json', 'application/yaml', 'text/plain'],
+      'application/yaml': ['application/yaml', 'text/plain'],
+    };
+    
+    return conversionMap[this.mimeType] || [];
+  }
+
+  /**
+   * Returns the MIME type for a given file extension
+   * @param {string} ext file extension (e.g., '.txt', '.html')
+   * @returns {string|null} MIME type or null if unsupported
+   */
+  static mimeTypeForExtension(ext) {
+    const extensionMap = {
+      '.txt': 'text/plain',
+      '.md': 'text/markdown',
+      '.html': 'text/html',
+      '.csv': 'text/csv',
+      '.json': 'application/json',
+      '.yaml': 'application/yaml',
+      '.yml': 'application/yaml',
+    };
+    
+    return extensionMap[ext] || null;
+  }
+
+  /**
+   * Converts fragment data to the specified MIME type
+   * @param {Buffer} data fragment data
+   * @param {string} targetType target MIME type
+   * @returns {Buffer} converted data
+   */
+  async convertTo(data, targetType) {
+    const sourceType = this.mimeType;
+    
+    // If target type is the same as source, no conversion needed
+    if (sourceType === targetType) {
+      return data;
+    }
+    
+    // Check if conversion is supported
+    if (!this.formats.includes(targetType)) {
+      throw new Error(`Cannot convert from ${sourceType} to ${targetType}`);
+    }
+    
+    const text = data.toString();
+    
+    // Handle conversions
+    switch (sourceType) {
+      case 'text/markdown':
+        if (targetType === 'text/html') {
+          // Simple markdown to HTML conversion (for demo purposes)
+          // In real implementation, you'd use a proper markdown parser
+          const html = text
+            .replace(/^# (.*)/gm, '<h1>$1</h1>')
+            .replace(/^## (.*)/gm, '<h2>$1</h2>')
+            .replace(/^### (.*)/gm, '<h3>$1</h3>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+          return Buffer.from(html);
+        }
+        break;
+        
+      case 'text/csv':
+        if (targetType === 'application/json') {
+          // Simple CSV to JSON conversion (for demo purposes)
+          const lines = text.trim().split('\n');
+          const headers = lines[0].split(',');
+          const result = lines.slice(1).map(line => {
+            const values = line.split(',');
+            const obj = {};
+            headers.forEach((header, index) => {
+              obj[header.trim()] = values[index]?.trim() || '';
+            });
+            return obj;
+          });
+          return Buffer.from(JSON.stringify(result, null, 2));
+        }
+        break;
+        
+      case 'application/json':
+        if (targetType === 'application/yaml') {
+          // Simple JSON to YAML conversion (for demo purposes)
+          const obj = JSON.parse(text);
+          const yaml = JSON.stringify(obj, null, 2)
+            .replace(/[{}]/g, '')
+            .replace(/"/g, '')
+            .replace(/,/g, '')
+            .trim();
+          return Buffer.from(yaml);
+        }
+        break;
+    }
+    
+    // Default conversion to text/plain (just return as-is)
+    if (targetType === 'text/plain') {
+      return data;
+    }
+    
+    throw new Error(`Conversion from ${sourceType} to ${targetType} not implemented`);
   }
 
   /**
