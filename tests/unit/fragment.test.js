@@ -169,6 +169,138 @@ describe('Fragment class', () => {
       });
       expect(fragment.formats).toEqual(['text/plain']);
     });
+
+    test('formats returns expected results for markdown', () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/markdown',
+        size: 0,
+      });
+      expect(fragment.formats).toEqual(['text/markdown', 'text/html', 'text/plain']);
+    });
+
+    test('formats returns expected results for json', () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'application/json',
+        size: 0,
+      });
+      expect(fragment.formats).toEqual(['application/json', 'application/yaml', 'text/plain']);
+    });
+
+    test('formats returns empty array for unsupported types', () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/plain',
+        size: 0,
+      });
+      Object.defineProperty(fragment, 'mimeType', {
+        get: () => 'unsupported/type',
+      });
+      expect(fragment.formats).toEqual([]);
+    });
+  });
+
+  describe('mimeTypeForExtension()', () => {
+    test('returns correct mime types for extensions', () => {
+      expect(Fragment.mimeTypeForExtension('.txt')).toBe('text/plain');
+      expect(Fragment.mimeTypeForExtension('.html')).toBe('text/html');
+      expect(Fragment.mimeTypeForExtension('.json')).toBe('application/json');
+      expect(Fragment.mimeTypeForExtension('.yaml')).toBe('application/yaml');
+      expect(Fragment.mimeTypeForExtension('.yml')).toBe('application/yaml');
+    });
+
+    test('returns null for unsupported extensions', () => {
+      expect(Fragment.mimeTypeForExtension('.xyz')).toBe(null);
+      expect(Fragment.mimeTypeForExtension('.png')).toBe(null);
+    });
+  });
+
+  describe('convertTo()', () => {
+    test('returns same data if no conversion needed', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/plain',
+        size: 0,
+      });
+      const data = Buffer.from('hello');
+      const result = await fragment.convertTo(data, 'text/plain');
+      expect(result).toEqual(data);
+    });
+
+    test('converts markdown to html', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/markdown',
+        size: 0,
+      });
+      const data = Buffer.from('# Hello World\n\nThis is **bold** text.');
+      const result = await fragment.convertTo(data, 'text/html');
+      expect(result.toString()).toContain('<h1>Hello World</h1>');
+      expect(result.toString()).toContain('<strong>bold</strong>');
+    });
+
+    test('converts csv to json', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/csv',
+        size: 0,
+      });
+      const data = Buffer.from('name,age\nJohn,25\nJane,30');
+      const result = await fragment.convertTo(data, 'application/json');
+      const parsed = JSON.parse(result.toString());
+      expect(parsed).toEqual([
+        { name: 'John', age: '25' },
+        { name: 'Jane', age: '30' },
+      ]);
+    });
+
+    test('converts json to yaml', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'application/json',
+        size: 0,
+      });
+      const data = Buffer.from('{"name": "John", "age": 25}');
+      const result = await fragment.convertTo(data, 'application/yaml');
+      expect(result.toString()).toContain('name: John');
+      expect(result.toString()).toContain('age: 25');
+    });
+
+    test('converts any type to plain text', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'application/json',
+        size: 0,
+      });
+      const data = Buffer.from('{"test": "data"}');
+      const result = await fragment.convertTo(data, 'text/plain');
+      expect(result).toEqual(data);
+    });
+
+    test('throws error for unsupported conversion', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/plain',
+        size: 0,
+      });
+      const data = Buffer.from('hello');
+      await expect(fragment.convertTo(data, 'application/json')).rejects.toThrow(
+        'Cannot convert from text/plain to application/json'
+      );
+    });
+
+    test('throws error for unimplemented conversion', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'text/markdown',
+        size: 0,
+      });
+      const data = Buffer.from('# test');
+      await expect(fragment.convertTo(data, 'unsupported/type')).rejects.toThrow(
+        'Cannot convert from text/markdown to unsupported/type'
+      );
+    });
   });
 
   describe('save(), getData(), setData(), byId(), byUser(), delete()', () => {
