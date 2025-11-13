@@ -61,6 +61,7 @@ web_modules/
 
 # Output of 'npm pack'
 *.tgz
+*.xz
 
 # Yarn Integrity file
 .yarn-integrity
@@ -137,3 +138,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# node-v22
+node-v22.19.0-linux-x64
