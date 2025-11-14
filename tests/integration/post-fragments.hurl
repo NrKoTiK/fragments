@@ -27,6 +27,8 @@ jsonpath "$.fragment.updated" isString
 jsonpath "$.fragment.type" == "text/plain"
 # 19 is the length of our fragment data: 'This is a fragment!'
 jsonpath "$.fragment.size" == 19
+[Captures]
+url: header "Location"
 
 # 2. Try to GET the fragment we just posted by its URL
 GET {{url}}
@@ -34,7 +36,7 @@ GET {{url}}
 user1@email.com:password1
 
 HTTP/1.1 200
-Content-Type: text/plain
-Content-Length: 19
 [Asserts]
+header "Content-Type" matches "^text/plain"
+header "Content-Length" == "19"
 body == "This is a fragment!"

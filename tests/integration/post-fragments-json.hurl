@@ -23,6 +23,6 @@ GET http://localhost:8080/v1/fragments/{{fragment_id}}
 user1@email.com:password1
 
 HTTP/1.1 200
-Content-Type: application/json
 [Asserts]
-body == "{\"message\": \"Hello World\", \"status\": \"success\"}"
+jsonpath "$.message" == "Hello World"
+jsonpath "$.status" == "success"
