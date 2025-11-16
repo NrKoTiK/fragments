@@ -12,7 +12,6 @@
     "dev": "node --env-file=debug.env --watch ./src/index.js",
     "debug": "node --env-file=debug.env --inspect=0.0.0.0:9229 --watch ./src/index.js",
     "test:integration": "hurl --test --glob \"tests/integration/**/*.hurl\""
-
   },
   "repository": {
     "type": "git",
@@ -29,6 +28,7 @@
     "supertest": "^7.1.4"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.932.0",
     "aws-jwt-verify": "^5.1.0",
     "compression": "^1.8.1",
     "content-type": "^1.0.5",
