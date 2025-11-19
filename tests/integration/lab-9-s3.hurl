@@ -6,9 +6,7 @@ POST http://localhost:8080/v1/fragments
 Content-Type: text/plain
 [BasicAuth]
 user1@email.com:password1
-```
-Hello S3!
-```
+`Hello S3!`
 
 # Confirm 201 response and capture Location header
 HTTP/1.1 201
