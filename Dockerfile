@@ -27,9 +27,9 @@ FROM node:22.19.0-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b8
 # Production environment
 ENV NODE_ENV=production
 
-ENV PORT=8080
-# We run our service on port 8080
-EXPOSE 8080
+ENV PORT=80
+# Expose production HTTP port 80 for ECS / ALB
+EXPOSE 80
 
 WORKDIR /app
 
@@ -43,8 +43,6 @@ COPY --chown=node:node ./src ./src
 
 # Copy our HTPASSWD file
 COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
-
-USER node
 
 # Start the container by running our server
 CMD ["npm", "start"]
