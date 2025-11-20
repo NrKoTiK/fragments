@@ -8,7 +8,7 @@
   "taskRoleArn": "arn:aws:iam::992382847621:role/LabRole",
   "containerDefinitions": [
     {
-      "name": "fragments",
+      "name": "fragments-container",
       "image": "992382847621.dkr.ecr.us-east-1.amazonaws.com/fragments:latest",
       "essential": true,
       "portMappings": [
@@ -17,7 +17,12 @@
           "protocol": "tcp"
         }
       ],
-      "environment": [],
+      "environment": [
+        { "name": "PORT", "value": "80" },
+        { "name": "LOG_LEVEL", "value": "info" },
+        { "name": "NODE_ENV", "value": "production" },
+        { "name": "AWS_REGION", "value": "us-east-1" }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
