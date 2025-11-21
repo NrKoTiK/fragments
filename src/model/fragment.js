@@ -48,7 +48,9 @@ class Fragment {
     if (expand) {
       logger.debug(`Expanding fragments for user ${ownerId}`);
       return fragments.map((fragmentData) => {
-        const fragment = new Fragment({ ...fragmentData });
+        // Handle both serialized strings (memory) and objects (AWS DynamoDB)
+        const data = typeof fragmentData === 'string' ? JSON.parse(fragmentData) : fragmentData;
+        const fragment = new Fragment({ ...data });
         return {
           id: fragment.id,
           ownerId: fragment.ownerId,
