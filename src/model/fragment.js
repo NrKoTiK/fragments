@@ -48,7 +48,7 @@ class Fragment {
     if (expand) {
       logger.debug(`Expanding fragments for user ${ownerId}`);
       return fragments.map((fragmentData) => {
-        const fragment = new Fragment({ ...JSON.parse(fragmentData) });
+        const fragment = new Fragment({ ...fragmentData });
         return {
           id: fragment.id,
           ownerId: fragment.ownerId,
