@@ -12,7 +12,7 @@ const {
   writeFragmentData,
   listFragments,
   deleteFragment,
-} = require('./data/memory');
+} = require('./data');
 const logger = require('../logger');
 
 class Fragment {
@@ -153,7 +153,7 @@ class Fragment {
       'application/json': ['application/json', 'application/yaml', 'text/plain'],
       'application/yaml': ['application/yaml', 'text/plain'],
     };
-    
+
     return conversionMap[this.mimeType] || [];
   }
 
@@ -172,7 +172,7 @@ class Fragment {
       '.yaml': 'application/yaml',
       '.yml': 'application/yaml',
     };
-    
+
     return extensionMap[ext] || null;
   }
 
@@ -184,19 +184,19 @@ class Fragment {
    */
   async convertTo(data, targetType) {
     const sourceType = this.mimeType;
-    
+
     // If target type is the same as source, no conversion needed
     if (sourceType === targetType) {
       return data;
     }
-    
+
     // Check if conversion is supported
     if (!this.formats.includes(targetType)) {
       throw new Error(`Cannot convert from ${sourceType} to ${targetType}`);
     }
-    
+
     const text = data.toString();
-    
+
     // Handle conversions
     switch (sourceType) {
       case 'text/markdown':
@@ -213,13 +213,13 @@ class Fragment {
           return Buffer.from(html);
         }
         break;
-        
+
       case 'text/csv':
         if (targetType === 'application/json') {
           // Simple CSV to JSON conversion (for demo purposes)
           const lines = text.trim().split('\n');
           const headers = lines[0].split(',');
-          const result = lines.slice(1).map(line => {
+          const result = lines.slice(1).map((line) => {
             const values = line.split(',');
             const obj = {};
             headers.forEach((header, index) => {
@@ -230,7 +230,7 @@ class Fragment {
           return Buffer.from(JSON.stringify(result, null, 2));
         }
         break;
-        
+
       case 'application/json':
         if (targetType === 'application/yaml') {
           // Simple JSON to YAML conversion (for demo purposes)
@@ -244,12 +244,12 @@ class Fragment {
         }
         break;
     }
-    
+
     // Default conversion to text/plain (just return as-is)
     if (targetType === 'text/plain') {
       return data;
     }
-    
+
     throw new Error(`Conversion from ${sourceType} to ${targetType} not implemented`);
   }
 
