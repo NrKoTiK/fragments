@@ -3,6 +3,8 @@
 const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
+// Use markdown-it for Markdown to HTML conversion
+const MarkdownIt = require('markdown-it');
 
 // Functions for working with fragment metadata/data using our DB
 const {
@@ -154,6 +156,11 @@ class Fragment {
       'text/csv': ['text/csv', 'text/plain', 'application/json'],
       'application/json': ['application/json', 'application/yaml', 'text/plain'],
       'application/yaml': ['application/yaml', 'text/plain'],
+      'image/png': ['image/png'],
+      'image/jpeg': ['image/jpeg'],
+      'image/webp': ['image/webp'],
+      'image/gif': ['image/gif'],
+      'image/avif': ['image/avif'],
     };
 
     return conversionMap[this.mimeType] || [];
@@ -203,15 +210,9 @@ class Fragment {
     switch (sourceType) {
       case 'text/markdown':
         if (targetType === 'text/html') {
-          // Simple markdown to HTML conversion (for demo purposes)
-          // In real implementation, you'd use a proper markdown parser
-          const html = text
-            .replace(/^# (.*)/gm, '<h1>$1</h1>')
-            .replace(/^## (.*)/gm, '<h2>$1</h2>')
-            .replace(/^### (.*)/gm, '<h3>$1</h3>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/\n/g, '<br>');
+          // Use markdown-it for proper Markdown to HTML conversion
+          const md = new MarkdownIt();
+          const html = md.render(text);
           return Buffer.from(html);
         }
         break;
@@ -269,6 +270,11 @@ class Fragment {
       'text/csv',
       'application/json',
       'application/yaml',
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'image/gif',
+      'image/avif',
     ];
 
     // Parse the content type to get just the media type (without charset)

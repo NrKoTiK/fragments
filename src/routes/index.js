@@ -3,7 +3,7 @@
 const express = require('express');
 const { hostname } = require('os');
 
-const { version, author } = require('../../package.json');
+const { version, author, repository } = require('../../package.json');
 
 const router = express.Router();
 const { authenticate } = require('../auth');
@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
   res.status(200).json({
     status: 'ok',
     author,
-    githubUrl: 'https://github.com/NrKoTiK/fragments',
+    githubUrl: repository?.url?.replace(/^git\+/, '').replace(/\.git$/, '') || 'https://github.com/NrKoTiK/fragments',
     version,
     hostname: hostname(),
   });

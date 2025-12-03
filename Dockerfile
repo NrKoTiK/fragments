@@ -1,4 +1,3 @@
-# adding some test comment cus idk what am doing fr
 FROM node:22.19.0-alpine@sha256:d2166de198f26e17e5a442f537754dd616ab069c47cc57b889310a717e0abbf9 AS dependencies
 
 LABEL maintainer="Ahmad Syed (asyed113@myseneca.ca)"

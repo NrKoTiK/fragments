@@ -122,13 +122,19 @@ describe('Fragment class', () => {
       expect(Fragment.isSupportedType('application/yaml')).toBe(true);
     });
 
+    test('image types are supported', () => {
+      expect(Fragment.isSupportedType('image/png')).toBe(true);
+      expect(Fragment.isSupportedType('image/jpeg')).toBe(true);
+      expect(Fragment.isSupportedType('image/webp')).toBe(true);
+      expect(Fragment.isSupportedType('image/gif')).toBe(true);
+      expect(Fragment.isSupportedType('image/avif')).toBe(true);
+    });
+
     test('other types are not supported', () => {
       expect(Fragment.isSupportedType('application/octet-stream')).toBe(false);
       expect(Fragment.isSupportedType('application/msword')).toBe(false);
       expect(Fragment.isSupportedType('audio/webm')).toBe(false);
       expect(Fragment.isSupportedType('video/ogg')).toBe(false);
-      expect(Fragment.isSupportedType('image/png')).toBe(false);
-      expect(Fragment.isSupportedType('image/jpeg')).toBe(false);
     });
   });
 

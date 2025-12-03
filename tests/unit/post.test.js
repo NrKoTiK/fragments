@@ -160,4 +160,55 @@ describe('POST /v1/fragments', () => {
       expect(res.body.fragment.type).toBe(type);
     }
   });
+
+  test('authenticated users can create image fragments', async () => {
+    // Create a simple PNG buffer (1x1 red pixel)
+    const pngBuffer = Buffer.from([
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+      0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+      0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+      0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53,
+      0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41,
+      0x54, 0x08, 0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0x00,
+      0x00, 0x03, 0x01, 0x01, 0x00, 0x18, 0xdd, 0x8d,
+      0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e,
+      0x44, 0xae, 0x42, 0x60, 0x82,
+    ]);
+
+    const res = await request(app)
+      .post('/v1/fragments')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'image/png')
+      .send(pngBuffer);
+
+    expect(res.status).toBe(201);
+    expect(res.body.status).toBe('ok');
+    expect(res.body.fragment.type).toBe('image/png');
+    expect(res.body.fragment.size).toBe(pngBuffer.length);
+  });
+
+  test('supports all image types', async () => {
+    // Create minimal binary data for testing
+    const imageBuffer = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
+    
+    const imageTypes = [
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'image/gif',
+      'image/avif',
+    ];
+
+    for (const type of imageTypes) {
+      const res = await request(app)
+        .post('/v1/fragments')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', type)
+        .send(imageBuffer);
+
+      expect(res.status).toBe(201);
+      expect(res.body.fragment.type).toBe(type);
+      expect(res.body.fragment.size).toBe(imageBuffer.length);
+    }
+  });
 });
