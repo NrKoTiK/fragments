@@ -86,8 +86,8 @@ user1@email.com:password1
 HTTP/1.1 200
 [Asserts]
 jsonpath "$.status" == "ok"
-jsonpath "$.fragments" includes {{fragment1_id}}
-jsonpath "$.fragments" includes {{fragment2_id}}
+jsonpath "$.fragments" contains {{fragment1_id}}
+jsonpath "$.fragments" contains {{fragment2_id}}
 
 # 6. DELETE the first fragment
 DELETE {{fragment1_url}}
@@ -113,9 +113,9 @@ GET http://localhost:8080/v1/fragments
 [BasicAuth]
 user1@email.com:password1
 
-# Confirm 200 response and first ID is NOT in list, but second ID is
+# Verify the deleted fragment is not in the list but the second fragment still is
 HTTP/1.1 200
 [Asserts]
 jsonpath "$.status" == "ok"
-jsonpath "$.fragments" not includes {{fragment1_id}}
-jsonpath "$.fragments" includes {{fragment2_id}}
+jsonpath "$.fragments" not contains {{fragment1_id}}
+jsonpath "$.fragments" contains {{fragment2_id}}

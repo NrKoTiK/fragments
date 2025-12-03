@@ -6,9 +6,7 @@ Content-Type: image/png
 [BasicAuth]
 user1@email.com:password1
 # Minimal 1x1 red PNG image (binary data as hex)
-hex,89504e470d0a1a0a0000000d494844520000000100000001080200000090775
-3de0000000c49444154089763f8cfc00000030101001dd8b4000000004945
-4e44ae426082;
+hex,89504e470d0a1a0a0000000d4948445200000001000000010802000000907753de0000000c4944415408d763f8cfc00000030101001add8db4000000004945454e44ae426082;
 
 HTTP 201
 [Captures]
@@ -18,7 +16,7 @@ png_fragment_id: jsonpath "$.fragment.id"
 jsonpath "$.status" == "ok"
 jsonpath "$.fragment.id" matches "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
 jsonpath "$.fragment.type" == "image/png"
-jsonpath "$.fragment.size" == 67
+jsonpath "$.fragment.size" == 70
 header "Location" matches "^http://localhost:8080/v1/fragments/[0-9a-fA-F-]+$"
 
 # 2. GET the PNG image fragment data
@@ -30,8 +28,8 @@ HTTP 200
 Content-Type: image/png
 [Asserts]
 header "Content-Type" == "image/png"
-header "Content-Length" == "67"
-bytes count == 67
+header "Content-Length" == "70"
+bytes count == 70
 
 # 3. GET the PNG image fragment metadata
 GET {{png_fragment_url}}/info
@@ -43,7 +41,7 @@ HTTP 200
 jsonpath "$.status" == "ok"
 jsonpath "$.fragment.id" == {{png_fragment_id}}
 jsonpath "$.fragment.type" == "image/png"
-jsonpath "$.fragment.size" == 67
+jsonpath "$.fragment.size" == 70
 
 # 4. POST a JPEG image fragment
 POST http://localhost:8080/v1/fragments
@@ -67,8 +65,8 @@ user1@email.com:password1
 HTTP 200
 [Asserts]
 jsonpath "$.status" == "ok"
-jsonpath "$.fragments" includes {{png_fragment_id}}
-jsonpath "$.fragments" includes {{jpeg_fragment_id}}
+jsonpath "$.fragments" contains {{png_fragment_id}}
+jsonpath "$.fragments" contains {{jpeg_fragment_id}}
 
 # 6. DELETE the PNG fragment
 DELETE {{png_fragment_url}}
