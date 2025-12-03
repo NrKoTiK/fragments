@@ -5,6 +5,8 @@ const { randomUUID } = require('crypto');
 const contentType = require('content-type');
 // Use markdown-it for Markdown to HTML conversion
 const MarkdownIt = require('markdown-it');
+// Use sharp for image conversions
+const sharp = require('sharp');
 
 // Functions for working with fragment metadata/data using our DB
 const {
@@ -156,11 +158,11 @@ class Fragment {
       'text/csv': ['text/csv', 'text/plain', 'application/json'],
       'application/json': ['application/json', 'application/yaml', 'text/plain'],
       'application/yaml': ['application/yaml', 'text/plain'],
-      'image/png': ['image/png'],
-      'image/jpeg': ['image/jpeg'],
-      'image/webp': ['image/webp'],
-      'image/gif': ['image/gif'],
-      'image/avif': ['image/avif'],
+      'image/png': ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'],
+      'image/jpeg': ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'],
+      'image/webp': ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'],
+      'image/gif': ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'],
+      'image/avif': ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'],
     };
 
     return conversionMap[this.mimeType] || [];
@@ -180,6 +182,12 @@ class Fragment {
       '.json': 'application/json',
       '.yaml': 'application/yaml',
       '.yml': 'application/yaml',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.webp': 'image/webp',
+      '.gif': 'image/gif',
+      '.avif': 'image/avif',
     };
 
     return extensionMap[ext] || null;
@@ -246,6 +254,30 @@ class Fragment {
           return Buffer.from(yaml);
         }
         break;
+    }
+
+    // Handle image conversions using sharp
+    const imageTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/avif'];
+    if (imageTypes.includes(sourceType) && imageTypes.includes(targetType)) {
+      try {
+        const sharpInstance = sharp(data);
+
+        // Convert based on target type
+        switch (targetType) {
+          case 'image/png':
+            return await sharpInstance.png().toBuffer();
+          case 'image/jpeg':
+            return await sharpInstance.jpeg().toBuffer();
+          case 'image/webp':
+            return await sharpInstance.webp().toBuffer();
+          case 'image/gif':
+            return await sharpInstance.gif().toBuffer();
+          case 'image/avif':
+            return await sharpInstance.avif().toBuffer();
+        }
+      } catch (err) {
+        throw new Error(`Image conversion failed: ${err.message}`);
+      }
     }
 
     // Default conversion to text/plain (just return as-is)

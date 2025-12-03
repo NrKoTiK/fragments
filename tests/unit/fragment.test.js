@@ -214,11 +214,17 @@ describe('Fragment class', () => {
       expect(Fragment.mimeTypeForExtension('.json')).toBe('application/json');
       expect(Fragment.mimeTypeForExtension('.yaml')).toBe('application/yaml');
       expect(Fragment.mimeTypeForExtension('.yml')).toBe('application/yaml');
+      expect(Fragment.mimeTypeForExtension('.png')).toBe('image/png');
+      expect(Fragment.mimeTypeForExtension('.jpg')).toBe('image/jpeg');
+      expect(Fragment.mimeTypeForExtension('.jpeg')).toBe('image/jpeg');
+      expect(Fragment.mimeTypeForExtension('.webp')).toBe('image/webp');
+      expect(Fragment.mimeTypeForExtension('.gif')).toBe('image/gif');
+      expect(Fragment.mimeTypeForExtension('.avif')).toBe('image/avif');
     });
 
     test('returns null for unsupported extensions', () => {
       expect(Fragment.mimeTypeForExtension('.xyz')).toBe(null);
-      expect(Fragment.mimeTypeForExtension('.png')).toBe(null);
+      expect(Fragment.mimeTypeForExtension('.mp4')).toBe(null);
     });
   });
 
@@ -306,6 +312,53 @@ describe('Fragment class', () => {
       await expect(fragment.convertTo(data, 'unsupported/type')).rejects.toThrow(
         'Cannot convert from text/markdown to unsupported/type'
       );
+    });
+
+    test('converts PNG to JPEG using sharp', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'image/png',
+        size: 0,
+      });
+      // Minimal valid PNG (1x1 red pixel)
+      const pngData = Buffer.from([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44,
+        0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90,
+        0x77, 0x53, 0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8,
+        0xcf, 0xc0, 0x00, 0x00, 0x03, 0x01, 0x01, 0x00, 0x18, 0xdd, 0x8d, 0xb4, 0x00, 0x00, 0x00,
+        0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+      ]);
+
+      const result = await fragment.convertTo(pngData, 'image/jpeg');
+      expect(Buffer.isBuffer(result)).toBe(true);
+      expect(result.length).toBeGreaterThan(0);
+      // JPEG files start with FFD8FF
+      expect(result[0]).toBe(0xff);
+      expect(result[1]).toBe(0xd8);
+    });
+
+    test('converts PNG to WebP using sharp', async () => {
+      const fragment = new Fragment({
+        ownerId: '1234',
+        type: 'image/png',
+        size: 0,
+      });
+      const pngData = Buffer.from([
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44,
+        0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02, 0x00, 0x00, 0x00, 0x90,
+        0x77, 0x53, 0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x08, 0xd7, 0x63, 0xf8,
+        0xcf, 0xc0, 0x00, 0x00, 0x03, 0x01, 0x01, 0x00, 0x18, 0xdd, 0x8d, 0xb4, 0x00, 0x00, 0x00,
+        0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82,
+      ]);
+
+      const result = await fragment.convertTo(pngData, 'image/webp');
+      expect(Buffer.isBuffer(result)).toBe(true);
+      expect(result.length).toBeGreaterThan(0);
+      // WebP files start with RIFF
+      expect(result[0]).toBe(0x52); // R
+      expect(result[1]).toBe(0x49); // I
+      expect(result[2]).toBe(0x46); // F
+      expect(result[3]).toBe(0x46); // F
     });
   });
 
