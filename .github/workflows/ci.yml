@@ -67,12 +67,30 @@ jobs:
         run: npm install
       - name: Build Containers
         run: docker compose up -d
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for containers to be healthy..."
+          timeout 60 bash -c 'until docker compose ps | grep -q "healthy"; do sleep 2; done' || {
+            echo "Services failed to become healthy. Checking logs..."
+            docker compose logs
+            exit 1
+          }
+          echo "Waiting for API to be ready on localhost:8080..."
+          timeout 30 bash -c 'until curl -s http://localhost:8080 > /dev/null; do sleep 2; done' || {
+            echo "API failed to start. Checking logs..."
+            docker compose logs fragments
+            exit 1
+          }
+          echo "All services are ready!"
       - name: Setup Local AWS Resources
         # NOTE: this file needs to be made executable *before* you check into git:
         # $ chmod +x ./scripts/local-aws-setup.sh
         run: ./scripts/local-aws-setup.sh
       - name: Run Hurl Tests
         run: npm run test:integration
+      - name: Show container logs on failure
+        if: failure()
+        run: docker compose logs
 
   docker-hub:
     name: Build and Push to Docker Hub
