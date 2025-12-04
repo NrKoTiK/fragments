@@ -5,7 +5,9 @@ POST http://localhost:8080/v1/fragments
 Content-Type: text/plain
 [BasicAuth]
 user1@email.com:password1
+```
 This is the original content
+```
 
 HTTP 201
 [Captures]
@@ -22,7 +24,9 @@ PUT {{fragment_url}}
 Content-Type: text/plain
 [BasicAuth]
 user1@email.com:password1
+```
 This is the updated content!!!
+```
 
 HTTP 200
 [Asserts]
@@ -48,7 +52,9 @@ PUT {{fragment_url}}
 Content-Type: application/json
 [BasicAuth]
 user1@email.com:password1
+```
 {"key": "value"}
+```
 
 HTTP 400
 [Asserts]
@@ -60,7 +66,9 @@ POST http://localhost:8080/v1/fragments
 Content-Type: application/json
 [BasicAuth]
 user1@email.com:password1
+```
 {"name": "original", "count": 1}
+```
 
 HTTP 201
 [Captures]
@@ -72,7 +80,9 @@ PUT {{json_fragment_url}}
 Content-Type: application/json
 [BasicAuth]
 user1@email.com:password1
+```
 {"name": "updated", "count": 2, "active": true}
+```
 
 HTTP 200
 [Asserts]
@@ -97,7 +107,9 @@ PUT {{fragment_url}}
 Content-Type: text/plain
 [BasicAuth]
 user2@email.com:password2
+```
 Trying to steal this fragment
+```
 
 HTTP 404
 [Asserts]
