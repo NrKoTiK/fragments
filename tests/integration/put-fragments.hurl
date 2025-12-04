@@ -33,7 +33,7 @@ HTTP 200
 jsonpath "$.status" == "ok"
 jsonpath "$.fragment.id" == {{fragment_id}}
 jsonpath "$.fragment.type" == "text/plain"
-jsonpath "$.fragment.size" == 33
+jsonpath "$.fragment.size" == 31
 jsonpath "$.fragment.created" == {{original_created}}
 jsonpath "$.fragment.updated" != {{original_created}}
 
