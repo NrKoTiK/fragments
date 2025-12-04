@@ -43,9 +43,9 @@ GET {{fragment_url}}
 user1@email.com:password1
 
 HTTP 200
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
 [Asserts]
-body == "This is the updated content!!!"
+body == "This is the updated content!!!\n"
 
 # 4. Try to change the content type (should fail)
 PUT {{fragment_url}}
@@ -96,7 +96,7 @@ GET {{json_fragment_url}}
 user1@email.com:password1
 
 HTTP 200
-Content-Type: application/json
+Content-Type: application/json; charset=utf-8
 [Asserts]
 jsonpath "$.name" == "updated"
 jsonpath "$.count" == 2
